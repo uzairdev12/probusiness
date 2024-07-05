@@ -104,7 +104,7 @@ const Dashboard = () => {
               onClick={() => {
                 if (verified) {
                   navigator.clipboard.writeText(
-                    `http://localhost:5173/login/${user._id}`
+                    `https://theprobusiness.vercel.app/login/${user._id}`
                   );
                   toast.success("Refferral link copied to clipboard");
                 } else {
