@@ -60,6 +60,11 @@ module.exports.signup = async (req, res) => {
   try {
     const { data, reffer } = req.body;
     let value = await valuemodel.findById("667e67c6eed2bce6005f1374");
+let existinguser = await usermodel.findOne({email : data.email});
+
+if(existinguser){
+return res.status(400).json({ success: false, message: "Email is already taken" });
+}
 
     if (reffer) {
       const exuser = await usermodel.findById(reffer);
