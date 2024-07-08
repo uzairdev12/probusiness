@@ -9,6 +9,7 @@ const Withdraws = () => {
   const navigate = useNavigate();
   const [loading, setLoading] = useState(true);
   const [withdrawals, setWithdrawals] = useState([]);
+  const [loading2, setLoading2] = useState("");
   const [value, setValue] = useState({});
   const loadWithdrawals = async () => {
     try {
@@ -39,6 +40,7 @@ const Withdraws = () => {
   }, []);
   const accept = async (id) => {
     try {
+      setLoading2(id);
       const res = await fetch(
         "https://probusinessapi.vercel.app/api/withdraw/accept",
         {
@@ -52,16 +54,20 @@ const Withdraws = () => {
       const response = await res.json();
       if (response.success === false) {
         toast.error(response.message || "Something went wrong !");
+        setLoading2("");
       } else {
         toast.success("Withdrawal Accepted !");
         loadWithdrawals();
+        setLoading2("");
       }
     } catch (e) {
       toast.error(e.message || "Something went wrong !");
+      setLoading2("");
     }
   };
   const reject = async (id) => {
     try {
+      setLoading2(id);
       const res = await fetch(
         "https://probusinessapi.vercel.app/api/withdraw/reject",
         {
@@ -75,12 +81,15 @@ const Withdraws = () => {
       const response = await res.json();
       if (response.success === false) {
         toast.error(response.message || "Something went wrong !");
+        setLoading2("");
       } else {
         toast.success("Withdrawal Rejected !");
         loadWithdrawals();
+        setLoading2("");
       }
     } catch (e) {
       toast.error(e.message || "Something went wrong !");
+      setLoading2("");
     }
   };
   function formatDate(dateString) {
@@ -167,17 +176,47 @@ const Withdraws = () => {
                     >
                       <button
                         onClick={() => {
-                          accept(e._id);
+                          if (loading2 !== e._id) {
+                            accept(e._id);
+                          }
                         }}
                       >
-                        Accept
+                        {loading2 === e._id ? (
+                          <TailSpin
+                            visible={true}
+                            height="20"
+                            width="20"
+                            color="rgb(0, 0, 0)"
+                            ariaLabel="tail-spin-loading"
+                            radius="1"
+                            wrapperStyle={{}}
+                            wrapperClass=""
+                          />
+                        ) : (
+                          "Accept"
+                        )}
                       </button>
                       <button
                         onClick={() => {
-                          reject(e._id);
+                          if (loading2 !== e._id) {
+                            reject(e._id);
+                          }
                         }}
                       >
-                        Reject
+                        {loading2 === e._id ? (
+                          <TailSpin
+                            visible={true}
+                            height="20"
+                            width="20"
+                            color="rgb(0, 0, 0)"
+                            ariaLabel="tail-spin-loading"
+                            radius="1"
+                            wrapperStyle={{}}
+                            wrapperClass=""
+                          />
+                        ) : (
+                          "Reject"
+                        )}
                       </button>
                     </div>
                   </div>
