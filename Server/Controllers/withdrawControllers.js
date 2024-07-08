@@ -26,7 +26,8 @@ module.exports.deposit = async (req, res) => {
     if (user.balance < data.amount) {
       throw new Error("Insufficient balance");
     }
-
+    user.balance -= data.amount;
+    await user.save();
     const deposit = new withdrawmodel(data);
     const savedDeposit = await deposit.save();
 
@@ -89,9 +90,7 @@ module.exports.accept = async (req, res) => {
     const withdraw = await withdrawmodel.findById(id);
     withdraw.status = "approved";
     await withdraw.save();
-    const user = await usermodel.findById(withdraw.userid);
-    user.balance = user.balance - withdraw.amount;
-    await user.save();
+
     res.status(200).json({ success: true, withdraw });
   } catch (e) {
     console.error(e);
@@ -107,7 +106,16 @@ module.exports.reject = async (req, res) => {
       throw new Error("Invalid request body");
     }
     const withdraw = await withdrawmodel.findById(id);
+    if (!withdraw) {
+      throw new Error("Withdraw not found");
+    }
+    let user = await usermodel.findById(withdraw.userid);
+    if (!user) {
+      throw new Error("User not found");
+    }
+    user.balance += withdraw.amount;
     withdraw.status = "rejected";
+    await user.save();
     await withdraw.save();
     res.status(200).json({ success: true, withdraw });
   } catch (e) {
