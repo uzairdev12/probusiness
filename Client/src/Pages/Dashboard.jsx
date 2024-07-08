@@ -62,11 +62,7 @@ const Dashboard = () => {
     };
     fetchData();
   }, []);
-  const urdutext =
-    "جوائننگ بونس 50 روپے، ڈائریکٹ پئیر کی ارننگ 200 روپے ہوگی، انڈائریکٹ پئیر کی ارننگ 100 روپے ہوگی۔";
-
-  const text2 =
-    "ودڈرال 24 گھنٹوں میں آپ کے اکاؤنٹ میں ہوگا۔ ودڈرال پر 10 فیصد کٹوتی ہوگی۔";
+   
   return (
     <div className="dashboard">
       {!loading && user ? (
@@ -160,7 +156,7 @@ const Dashboard = () => {
               <p>{user.total}pkr</p>
             </div>
           </div>
-          <p className="description">{urdutext + " " + text2}</p>
+          
         </>
       ) : (
         <div className="loaderdiv">
