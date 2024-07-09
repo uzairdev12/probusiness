@@ -1,20 +1,30 @@
 import React, { useEffect, useState } from "react";
-import { Outlet, useNavigate } from "react-router-dom";
+import { Outlet, useNavigate, useLocation } from "react-router-dom";
 import { Toaster } from "sonner";
 import "./index.css";
 
 const App = () => {
   const navigate = useNavigate();
+  const location = useLocation();
   const loggedin = localStorage.getItem("userID");
   const [pass, setPass] = useState(false);
+
   useEffect(() => {
-    if (loggedin) {
-      setPass(true);
+    // Check if the user is on /login or /login/:id
+    const isLoginPage = location.pathname.startsWith("/login");
+
+    if (!isLoginPage) {
+      if (loggedin) {
+        setPass(true);
+      } else {
+        // Store the current location
+        navigate("/login", { state: { from: location } });
+        setPass(true);
+      }
     } else {
-      navigate("/login");
       setPass(true);
     }
-  }, []);
+  }, [loggedin, location, navigate]);
 
   return (
     <div>
