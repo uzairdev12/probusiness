@@ -75,6 +75,56 @@ module.exports.getdeposits = async (req, res) => {
       .json({ success: false, message: e.message || "Server Error" });
   }
 };
+
+const updateUserCounts = async (userId, leftie, value) => {
+  // Recursive function to update user counts
+  if (!userId) return;
+
+  const user = await usermodel.findById(userId);
+  if (!user) return;
+
+  if (leftie) {
+    user.leftusers += 1;
+  } else {
+    user.rightusers += 1;
+  }
+
+  const newTotalPairs = Math.min(user.leftusers, user.rightusers);
+
+  if (newTotalPairs > user.totalPairs) {
+    const pairsIncrease = newTotalPairs - user.totalPairs;
+    user.balance += pairsIncrease * value.refferBonus2;
+    user.earnedbyreffers += pairsIncrease * value.refferBonus2;
+  }
+
+  user.totalPairs = newTotalPairs;
+
+  if (user.totalPairs == 5) {
+    user.reward += 350;
+  } else if (user.totalPairs == 10) {
+    user.reward += 750;
+  } else if (user.totalPairs == 50) {
+    user.reward += 1000;
+  } else if (user.totalPairs == 100) {
+    user.reward += 2000;
+  } else if (user.totalPairs == 500) {
+    user.reward += 3000;
+  } else if (user.totalPairs == 1000) {
+    user.reward += 5000;
+  } else if (user.totalPairs == 5000) {
+    user.reward += 20000;
+  } else if (user.totalPairs == 10000) {
+    user.reward += 50000;
+  } else if (user.totalPairs == 20000) {
+    user.reward += 100000;
+  } else if (user.totalPairs == 50000) {
+    user.reward += 500000;
+  }
+
+  await user.save();
+
+  await updateUserCounts(user.refferOf, user.leftie);
+};
 module.exports.accept = async (req, res) => {
   try {
     const { id } = req.body;
@@ -89,9 +139,29 @@ module.exports.accept = async (req, res) => {
     await withdraw.save();
     const user = await usermodel.findById(withdraw.userid);
     user.deposited = user.deposited + withdraw.amount;
+
     if (user.deposited >= value.req) {
       user.isVerified = true;
+      const exuser = await usermodel.findById(user.refferOf);
+      if (exuser) {
+        if (exuser.leftuser && exuser.rightuser) {
+        } else {
+          if (exuser.leftuser) {
+            exuser.rightuser = user._id;
+            exuser.balance += value.refferBonus1;
+            exuser.total += value.refferBonus1;
+            exuser.earnedbyreffers += value.refferBonus1;
+            user.rightie = true;
+          } else {
+            exuser.leftuser = user._id;
+            user.leftie = true;
+          }
+          await exuser.save();
+          await updateUserCounts(exuser.refferOf, exuser.leftie, value);
+        }
+      }
     }
+
     await user.save();
     res.status(200).json({ success: true, withdraw });
   } catch (e) {
