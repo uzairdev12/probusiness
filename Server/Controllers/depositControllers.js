@@ -88,9 +88,7 @@ module.exports.accept = async (req, res) => {
     withdraw.status = "approved";
     await withdraw.save();
     const user = await usermodel.findById(withdraw.userid);
-    user.balance = user.balance + withdraw.amount;
     user.deposited = user.deposited + withdraw.amount;
-    user.total = user.total + withdraw.amount;
     if (user.deposited >= value.req) {
       user.isVerified = true;
     }
