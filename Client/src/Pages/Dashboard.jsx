@@ -62,7 +62,6 @@ const Dashboard = () => {
     };
     fetchData();
   }, []);
-   
   return (
     <div className="dashboard">
       {!loading && user ? (
@@ -151,12 +150,23 @@ const Dashboard = () => {
             </div>
             <div className="infoContainer">
               <div className="head">
+                <p>Reffer Earning</p>
+              </div>
+              <p>{user.earnedbyreffers}pkr</p>
+            </div>
+            <div className="infoContainer">
+              <div className="head">
+                <p>Amount Deposited</p>
+              </div>
+              <p>{user.deposited}pkr</p>
+            </div>
+            <div className="infoContainer">
+              <div className="head">
                 <p>Total</p>
               </div>
               <p>{user.total}pkr</p>
             </div>
           </div>
-          
         </>
       ) : (
         <div className="loaderdiv">
