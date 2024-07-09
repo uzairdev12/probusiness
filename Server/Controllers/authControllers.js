@@ -36,32 +36,6 @@ module.exports.login = async (req, res) => {
   }
 };
 
-const updateUserCounts = async (userId, leftie, value) => {
-  // Recursive function to update user counts
-  if (!userId) return;
-
-  const user = await usermodel.findById(userId);
-  if (!user) return;
-
-  if (leftie) {
-    user.leftusers += 1;
-  } else {
-    user.rightusers += 1;
-  }
-
-  const newTotalPairs = Math.min(user.leftusers, user.rightusers);
-
-  if (newTotalPairs > user.totalPairs) {
-    const pairsIncrease = newTotalPairs - user.totalPairs;
-    user.balance += pairsIncrease * value.refferBonus2;
-  }
-
-  user.totalPairs = newTotalPairs;
-
-  await user.save();
-
-  await updateUserCounts(user.refferOf, user.leftie);
-};
 module.exports.signup = async (req, res) => {
   try {
     const { data, reffer } = req.body;
@@ -101,43 +75,17 @@ module.exports.signup = async (req, res) => {
         return;
       }
 
-      let user;
-      if (exuser.leftuser) {
-        user = new usermodel({
-          name: data.name || "User",
-          email: data.email,
-          password: data.password,
-          refferOf: reffer,
-          reward: value.joinBonus,
-          balance: value.joinBonus,
-          rightie: true,
-          total: value.joinBonus,
-        });
+      let user = new usermodel({
+        name: data.name || "User",
+        email: data.email,
+        password: data.password,
+        refferOf: reffer,
+        reward: value.joinBonus,
+        balance: value.joinBonus,
+        total: value.joinBonus,
+      });
 
-        await user.save();
-        exuser.rightuser = user._id;
-        exuser.balance += value.refferBonus1;
-        exuser.total += value.refferBonus1;
-      } else {
-        user = new usermodel({
-          name: data.name || "User",
-          email: data.email,
-          password: data.password,
-          refferOf: reffer,
-          reward: value.joinBonus,
-          balance: value.joinBonus,
-          leftie: true,
-          total: value.joinBonus,
-        });
-
-        await user.save();
-        exuser.leftuser = user._id;
-      }
-
-      // Save the changes to exuser
-      await exuser.save();
-
-      await updateUserCounts(exuser.refferOf, exuser.leftie, value);
+      await user.save();
 
       res.status(200).json({ success: true, user });
     } else {
