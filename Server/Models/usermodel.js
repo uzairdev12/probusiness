@@ -65,6 +65,11 @@ const userSchema = new mongoose.Schema({
     required: false,
     default: false,
   },
+  earnedbyreffers: {
+    type: Number,
+    required: false,
+    default: 0,
+  },
 
   rightuser: {
     type: String,
