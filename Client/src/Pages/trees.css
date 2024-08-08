@@ -123,3 +123,32 @@ hr {
   text-align: center;
   margin: 20px 0 30px 0;
 }
+.treewrapper {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  padding: 50px;
+  width: 90vw;
+  max-width: 200px;
+  background-color: bisque;
+  color: black;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+  box-shadow: 0px 0px 30px rgba(0, 0, 0, 0.514);
+  border-radius: 10px;
+  z-index: 10000;
+}
+.treewrapper button {
+  padding: 10px 30px;
+  font-size: 20px;
+  background-color: rgba(0, 0, 0, 0.11);
+  color: black;
+  width: 100%;
+  border: none;
+  margin: 10px 0;
+  border-radius: 10px;
+  cursor: pointer;
+}
