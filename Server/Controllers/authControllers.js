@@ -115,11 +115,16 @@ module.exports.userDetails = async (req, res) => {
 
     let user = await usermodel.findById(userID);
     let value = await valuemodel.findById("667e67c6eed2bce6005f1374");
+    let leftuserid = "";
+    let rightuserid = "";
     if (user) {
       if (trees) {
         if (user.leftuser) {
           const leftuser = await usermodel.findById(user.leftuser);
           if (leftuser) {
+            if (leftuser.isVerified) {
+              leftuserid = user.leftuser;
+            }
             user.leftuser = leftuser.name;
           } else {
             user.leftuser = "Empty";
@@ -128,6 +133,9 @@ module.exports.userDetails = async (req, res) => {
         if (user.rightuser) {
           const rightuser = await usermodel.findById(user.rightuser);
           if (rightuser) {
+            if (rightuser.isVerified) {
+              rightuserid = user.rightuser;
+            }
             user.rightuser = rightuser.name;
           } else {
             user.rightuser = "Empty";
@@ -137,6 +145,8 @@ module.exports.userDetails = async (req, res) => {
       res.status(200).json({
         success: true,
         user,
+        leftuserid,
+        rightuserid,
         verified: user.isVerified,
         value,
       });
@@ -243,6 +253,7 @@ module.exports.getUserDetails = async (req, res) => {
   try {
     const { id } = req.body;
     const user = await usermodel.findById(id);
+
     if (!user) {
       throw new Error("User not found");
     }
